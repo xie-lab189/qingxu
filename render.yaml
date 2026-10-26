@@ -1,0 +1,36 @@
+# Render 单服务部署（后端 + 前端 + 定时邮件，三合一）
+services:
+  - type: web
+    name: qingxu
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: STORE_DRIVER
+        value: json # 云端数据库填 supabase，并配置下方两个变量
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # 智谱大模型（三智能体对话底座）
+      - key: ZHIPU_API_KEY
+        sync: false
+      - key: ZHIPU_BASE_URL
+        value: "https://open.bigmodel.cn/api/paas/v4"
+      - key: ZHIPU_MODEL
+        value: "glm-4-flash"
+      # 每晚 20:00（北京时间）邮件提醒令牌（/api/cron/reminders 与 /api/admin/export 共用）
+      - key: CRON_TOKEN
+        sync: false
+      # 邮件提醒（QQ 邮箱 SMTP，必填才能发信）
+      - key: SMTP_HOST
+        value: "smtp.qq.com"
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false

@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 治愈系配色：暖白 + 鼠尾草绿 + 雾蓝 */
+    --background: 45 38% 96%;
+    --foreground: 165 12% 22%;
+    --card: 0 0% 100%;
+    --card-foreground: 165 12% 22%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 165 12% 22%;
+    --primary: 158 30% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 42% 93%;
+    --secondary-foreground: 165 12% 25%;
+    --muted: 45 28% 93%;
+    --muted-foreground: 160 6% 46%;
+    --accent: 158 24% 90%;
+    --accent-foreground: 158 32% 28%;
+    --destructive: 0 72% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 45 20% 87%;
+    --input: 45 20% 87%;
+    --ring: 158 30% 40%;
+    --radius: 1rem;
+    --sidebar-background: 45 38% 96%;
+    --sidebar-foreground: 165 12% 22%;
+    --sidebar-primary: 158 30% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 45 42% 93%;
+    --sidebar-accent-foreground: 165 12% 25%;
+    --sidebar-border: 45 20% 87%;
+    --sidebar-ring: 158 30% 40%;
+  }
+
+  .dark {
+    --background: 165 14% 10%;
+    --foreground: 45 30% 92%;    --card: 165 12% 13%;
+    --card-foreground: 45 30% 92%;
+    --popover: 165 12% 13%;
+    --popover-foreground: 45 30% 92%;
+    --primary: 158 28% 55%;
+    --primary-foreground: 165 20% 10%;
+    --secondary: 165 10% 18%;
+    --secondary-foreground: 45 30% 92%;
+    --muted: 165 10% 18%;
+    --muted-foreground: 160 6% 62%;
+    --accent: 158 16% 20%;
+    --accent-foreground: 158 24% 78%;
+    --destructive: 0 62% 46%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 165 10% 20%;
+    --input: 165 10% 20%;
+    --ring: 158 28% 55%;
+    --sidebar-background: 165 14% 10%;
+    --sidebar-foreground: 45 30% 92%;
+    --sidebar-primary: 158 28% 55%;
+    --sidebar-primary-foreground: 165 20% 10%;
+    --sidebar-accent: 165 10% 18%;
+    --sidebar-accent-foreground: 45 30% 92%;
+    --sidebar-border: 165 10% 20%;
+    --sidebar-ring: 158 28% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-foreground antialiased;
+    min-height: 100vh;
+    /* 微渐变呼吸背景 */
+    background: linear-gradient(
+      135deg,
+      #f8f5ed 0%,
+      #eff4ee 42%,
+      #e9f1f3 78%,
+      #f3efe6 100%
+    );
+    background-size: 200% 200%;
+    animation: bg-breathe 18s ease-in-out infinite;
+  }
+
+  @keyframes bg-breathe {
+    0%,
+    100% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+  }
+}
+
+@layer utilities {
+  /* 玻璃拟态卡片 */
+  .glass-card {
+    @apply rounded-3xl border border-white/60 bg-gradient-card shadow-soft backdrop-blur-sm;
+  }
+}
+
+@layer base {
+  /*
+   * 情绪主题平滑过渡：
+   * --accent / --accent-foreground 等变量被 JS 修改后，
+   * 依赖这些变量的背景色、文字色、边框色会自动渐变
+   */
+  .glass-card,
+  button,
+  [role="button"],
+  .bg-accent,
+  .text-accent-foreground {
+    transition:
+      background-color 0.8s ease,
+      border-color 0.8s ease,
+      color 0.8s ease,
+      fill 0.8s ease,
+      stroke 0.8s ease,
+      box-shadow 0.8s ease;
+  }
+}
+/* ==================== 深夜模式（20:00 - 06:00） ==================== */
+/*
+ * 用 CSS 变量级联降亮度（而非 body filter——filter 会破坏 fixed 定位），
+ * 营造深夜树洞的暖暗氛围；html.night 由 App 每分钟根据系统时间切换。
+ */
+html.night body {
+  background: linear-gradient(160deg, #ece7f2 0%, #e2e6f0 45%, #eae4ee 100%) !important;
+  transition: background 1.2s ease;
+}
+html.night .glass-card {
+  background: rgba(252, 250, 255, 0.82);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+html.night header {
+  background: rgba(38, 34, 52, 0.32);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ==================== 移动端兜底：禁止页面级横向滚动 ==================== */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}

@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# 前端独立部署时在此配置后端地址（Render/Railway 上的青序 API）
+[build.environment]
+  VITE_API_URL = "https://你的后端地址"
+
+# SPA 路由回退
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,509 @@
+{
+  "users": {
+    "17828587060": {
+      "name": "11",
+      "phone": "17828587060",
+      "email": "3511808381@qq.com",
+      "createdAt": "2026-10-16T14:57:36.216Z",
+      "updatedAt": "2026-10-26T16:08:12.725Z",
+      "state": {
+        "qingxu.masterTasks": [
+          {
+            "id": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "name": "背1000个单词",
+            "totalAmount": 1000,
+            "unit": "单词",
+            "totalDays": 20,
+            "startDate": "2026-10-16",
+            "quadrant": "IMPORTANT_URGENT",
+            "dailyBase": 50,
+            "createdAt": "2026-10-16T15:00:01.185Z"
+          },
+          {
+            "id": "b3626f2b-71b7-4ce1-a193-1cee862c3afc",
+            "name": "复习90页ppt",
+            "totalAmount": 90,
+            "unit": "页",
+            "totalDays": 20,
+            "startDate": "2026-10-16",
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "dailyBase": 5,
+            "createdAt": "2026-10-16T15:44:12.991Z"
+          }
+        ],
+        "qingxu.dailyTasks": [
+          {
+            "id": "dcb3aaa9-1a67-4508-8c32-769aa0034f5b",
+            "masterTaskId": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "date": "2026-10-16",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "done",
+            "title": "背1000个单词 · 第1天 50个单词（累计 50/1000）",
+            "amount": 50,
+            "completedBy": "check",
+            "doneAt": "2026-10-16T15:01:09.773Z"
+          },
+          {
+            "id": "24b8e334-1555-41f4-b2eb-594c94e6c1d4",
+            "masterTaskId": "b3626f2b-71b7-4ce1-a193-1cee862c3afc",
+            "date": "2026-10-27",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "status": "done",
+            "title": "复习90页ppt · 第1天 5个页（累计 5/90）",
+            "amount": 5,
+            "overdue": true,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T16:08:01.971Z",
+            "celebrated": true
+          },
+          {
+            "id": "ea301bb7-933a-40f1-88af-226437c43467",
+            "masterTaskId": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "date": "2026-10-26",
+            "dayIndex": 2,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "done",
+            "title": "背1000个单词 · 第2天 50个单词（累计 100/1000）",
+            "amount": 50,
+            "overdue": true,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T15:52:57.662Z"
+          },
+          {
+            "id": "4f4f9b37-4b84-437a-8a39-6c4ea72dbfba",
+            "masterTaskId": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "date": "2026-10-26",
+            "dayIndex": 4,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "done",
+            "title": "背1000个单词 · 第4天 50个单词（累计 200/1000）",
+            "amount": 50,
+            "overdue": true,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T15:52:58.884Z"
+          },
+          {
+            "id": "836944e0-8a52-4f25-add1-974c2bea754b",
+            "masterTaskId": "b3626f2b-71b7-4ce1-a193-1cee862c3afc",
+            "date": "2026-10-26",
+            "dayIndex": 4,
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "status": "deferred",
+            "title": "复习90页ppt · 第4天 5个页（累计 20/90）",
+            "amount": 5,
+            "overdue": true,
+            "deferredTo": "2026-10-28"
+          },
+          {
+            "id": "e5816469-b523-46a7-a723-2b286f6e5c8d",
+            "masterTaskId": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "date": "2026-10-26",
+            "dayIndex": 11,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "done",
+            "title": "背1000个单词 · 第11天 50个单词（累计 550/1000）",
+            "amount": 50,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T15:53:01.669Z"
+          },
+          {
+            "id": "3bfa43bb-229a-48bd-894c-dc4835bd461c",
+            "masterTaskId": "b3626f2b-71b7-4ce1-a193-1cee862c3afc",
+            "date": "2026-10-26",
+            "dayIndex": 11,
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "status": "deferred",
+            "title": "复习90页ppt · 第11天 4个页（累计 54/90）",
+            "amount": 4,
+            "deferredTo": "2026-10-29"
+          },
+          {
+            "id": "83bbb7d1-0a8b-439b-8ba5-7b350dbfafee",
+            "masterTaskId": "44131cf9-d23e-4440-8513-b97d0e97b625",
+            "date": "2026-10-27",
+            "dayIndex": 12,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "done",
+            "title": "背1000个单词 · 第12天 50个单词（累计 600/1000）",
+            "amount": 50,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T16:08:01.069Z"
+          },
+          {
+            "id": "ec208469-9b4e-40bd-87d7-723c587e7de0",
+            "masterTaskId": "b3626f2b-71b7-4ce1-a193-1cee862c3afc",
+            "date": "2026-10-27",
+            "dayIndex": 12,
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "status": "done",
+            "title": "复习90页ppt · 第12天 4个页（累计 58/90）",
+            "amount": 4,
+            "completedBy": "check",
+            "doneAt": "2026-10-26T16:08:06.026Z",
+            "celebrated": true
+          }
+        ],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-27",
+            "doneCount": 3,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-26",
+            "doneCount": 3,
+            "deferredTaskIds": [
+              "24b8e334-1555-41f4-b2eb-594c94e6c1d4",
+              "836944e0-8a52-4f25-add1-974c2bea754b",
+              "3bfa43bb-229a-48bd-894c-dc4835bd461c"
+            ],
+            "mood": "tired",
+            "protected": true,
+            "boosted": false
+          },
+          {
+            "date": "2026-10-19",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-17",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-16",
+            "doneCount": 1,
+            "deferredTaskIds": [
+              "24b8e334-1555-41f4-b2eb-594c94e6c1d4"
+            ],
+            "mood": "low",
+            "protected": true,
+            "boosted": false
+          }
+        ],
+        "qingxu.moods": [
+          {
+            "emotion": "anxious",
+            "createdAt": "2026-10-16T14:57:43.018Z",
+            "id": "5f1fbffe-d496-4cd2-bc2d-875153bb834e",
+            "content": "不高兴"
+          },
+          {
+            "emotion": "anxious",
+            "createdAt": "2026-10-16T15:00:18.473Z",
+            "id": "18620258-a6b8-4392-877c-bccdda6e770d"
+          },
+          {
+            "emotion": "irritable",
+            "createdAt": "2026-10-16T15:39:29.360Z",
+            "id": "8fa33371-ecf0-4934-b9c0-d178cc037a1c"
+          },
+          {
+            "emotion": "low",
+            "createdAt": "2026-10-16T15:44:40.188Z",
+            "id": "4625ccc8-a251-4d71-ac14-ed49eadcd828"
+          },
+          {
+            "emotion": "tired",
+            "createdAt": "2026-10-26T15:53:08.446Z",
+            "id": "5294c237-01be-408f-b9ac-1d5fba995191"
+          }
+        ],
+        "qingxu.achievements": [
+          "first-seed",
+          "night-owl",
+          "planner-first",
+          "perfect-day"
+        ],
+        "qingxu.lastEmotion": "tired"
+      }
+    },
+    "13711112222": {
+      "name": "测试同学",
+      "phone": "13711112222",
+      "createdAt": "2026-10-16T15:25:04.487Z",
+      "updatedAt": "2026-10-16T15:25:04.524Z",
+      "state": {
+        "qingxu.masterTasks": [
+          {
+            "id": "mt_mvb4crjl_h05v9j",
+            "name": "背1000个单词",
+            "totalAmount": 1000,
+            "unit": "单词",
+            "totalDays": 10,
+            "startDate": "2026-10-16",
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "dailyBase": 100,
+            "createdAt": "2026-10-16T15:25:04.497Z"
+          }
+        ],
+        "qingxu.dailyTasks": [
+          {
+            "id": "mt_mvb4crjl_1ihzb1",
+            "masterTaskId": "mt_mvb4crjl_h05v9j",
+            "date": "2026-10-16",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_NOT_URGENT",
+            "status": "todo",
+            "title": "背1000个单词 · 第1天 100个单词（累计 100/1000）",
+            "amount": 100,
+            "boosted": true
+          }
+        ],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-16",
+            "mood": "energized",
+            "doneCount": 0,
+            "deferredTaskIds": [
+              "mt_mvb4crjl_1ihzb1"
+            ],
+            "protected": true,
+            "boosted": true
+          }
+        ],
+        "qingxu.moods": [
+          {
+            "id": "m_1792164304523",
+            "emotion": "energized",
+            "createdAt": "2026-10-16T15:25:04.523Z"
+          },
+          {
+            "id": "m_1792164304515",
+            "emotion": "anxious",
+            "createdAt": "2026-10-16T15:25:04.515Z"
+          }
+        ],
+        "qingxu.lastEmotion": "\"energized\""
+      }
+    },
+    "17828558706": {
+      "name": "11",
+      "phone": "17828558706",
+      "createdAt": "2026-10-19T08:20:55.707Z",
+      "updatedAt": "2026-10-26T16:17:06.466Z",
+      "state": {
+        "qingxu.masterTasks": [],
+        "qingxu.dailyTasks": [],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-26",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-23",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-22",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-21",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-20",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          },
+          {
+            "date": "2026-10-19",
+            "doneCount": 0,
+            "deferredTaskIds": []
+          }
+        ]
+      },
+      "email": "3511808381@qq.com"
+    },
+    "19900000000": {
+      "name": "_probe_",
+      "phone": "19900000000",
+      "email": null,
+      "createdAt": "2026-10-20T14:34:16.548Z",
+      "updatedAt": "2026-10-20T14:34:16.548Z",
+      "state": {}
+    },
+    "13800000001": {
+      "name": "验收测试",
+      "phone": "13800000001",
+      "email": "3511808381@qq.com",
+      "createdAt": "2026-10-20T14:42:06.378Z",
+      "updatedAt": "2026-10-20T14:42:46.157Z",
+      "state": {
+        "qingxu.diary": [
+          {
+            "id": "d1",
+            "date": "2026-10-20",
+            "content": "今天验收测试写下的日记",
+            "createdAt": "2026-10-20T14:42:46.153Z"
+          }
+        ],
+        "qingxu.masterTasks": [
+          {
+            "id": "mt_mvgslrlh_f5kzdt",
+            "name": "背300个单词",
+            "totalAmount": 300,
+            "unit": "单词",
+            "totalDays": 7,
+            "startDate": "2026-10-20",
+            "quadrant": "IMPORTANT_URGENT",
+            "dailyBase": 43,
+            "createdAt": "2026-10-20T14:42:46.133Z"
+          }
+        ],
+        "qingxu.dailyTasks": [
+          {
+            "id": "mt_mvgslrlh_5bypxp",
+            "masterTaskId": "mt_mvgslrlh_f5kzdt",
+            "date": "2026-10-20",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "todo",
+            "title": "背300个单词 · 第1天 43个单词（累计 43/300）",
+            "amount": 43
+          }
+        ],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-20",
+            "mood": "anxious",
+            "doneCount": 0,
+            "deferredTaskIds": [],
+            "protected": false,
+            "boosted": false
+          }
+        ],
+        "qingxu.moods": [
+          {
+            "id": "m_1792507366147",
+            "emotion": "anxious",
+            "createdAt": "2026-10-20T14:42:46.147Z"
+          }
+        ],
+        "qingxu.lastEmotion": "\"anxious\""
+      }
+    },
+    "13800000077": {
+      "name": "验收号",
+      "phone": "13800000077",
+      "email": "verify_test@qq.com",
+      "createdAt": "2026-10-20T15:25:08.291Z",
+      "updatedAt": "2026-10-20T15:25:08.321Z",
+      "state": {
+        "qingxu.dailyTasks": [
+          {
+            "id": "mt_mvgu495s_il578v",
+            "masterTaskId": "mt_mvgu495s_qeuhf7",
+            "date": "2026-10-20",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "todo",
+            "title": "背50个单词 · 第1天 10个单词（累计 10/50）",
+            "amount": 10
+          }
+        ],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-20",
+            "mood": "anxious",
+            "doneCount": 0,
+            "deferredTaskIds": [],
+            "protected": false,
+            "boosted": false
+          }
+        ],
+        "qingxu.moods": [
+          {
+            "id": "m_1792509908306",
+            "emotion": "anxious",
+            "createdAt": "2026-10-20T15:25:08.306Z"
+          }
+        ],
+        "qingxu.lastEmotion": "\"anxious\"",
+        "qingxu.masterTasks": [
+          {
+            "id": "mt_mvgu495s_qeuhf7",
+            "name": "背50个单词",
+            "totalAmount": 50,
+            "unit": "单词",
+            "totalDays": 5,
+            "startDate": "2026-10-20",
+            "quadrant": "IMPORTANT_URGENT",
+            "dailyBase": 10,
+            "createdAt": "2026-10-20T15:25:08.320Z"
+          }
+        ]
+      }
+    },
+    "13800000078": {
+      "name": "验收号2",
+      "phone": "13800000078",
+      "email": "verify_test2@qq.com",
+      "createdAt": "2026-10-20T15:25:33.791Z",
+      "updatedAt": "2026-10-20T15:25:33.824Z",
+      "state": {
+        "qingxu.moods": [
+          {
+            "id": "m_1792509933816",
+            "emotion": "anxious",
+            "createdAt": "2026-10-20T15:25:33.816Z"
+          },
+          {
+            "date": "2026-10-20",
+            "emotion": "anxious"
+          }
+        ],
+        "qingxu.lastEmotion": "\"anxious\"",
+        "qingxu.diary": [
+          {
+            "date": "2026-10-20",
+            "content": "今天很累，但写下来好一点"
+          }
+        ],
+        "qingxu.masterTasks": [
+          {
+            "id": "mt_mvgu4su7_akp034",
+            "name": "背50个单词",
+            "totalAmount": 50,
+            "unit": "单词",
+            "totalDays": 5,
+            "startDate": "2026-10-20",
+            "quadrant": "IMPORTANT_URGENT",
+            "dailyBase": 10,
+            "createdAt": "2026-10-20T15:25:33.823Z"
+          }
+        ],
+        "qingxu.dailyTasks": [
+          {
+            "id": "mt_mvgu4su8_wibqzo",
+            "masterTaskId": "mt_mvgu4su7_akp034",
+            "date": "2026-10-20",
+            "dayIndex": 1,
+            "quadrant": "IMPORTANT_URGENT",
+            "status": "todo",
+            "title": "背50个单词 · 第1天 10个单词（累计 10/50）",
+            "amount": 10
+          }
+        ],
+        "qingxu.dailyLogs": [
+          {
+            "date": "2026-10-20",
+            "mood": "anxious",
+            "doneCount": 0,
+            "deferredTaskIds": [],
+            "protected": false,
+            "boosted": false
+          }
+        ]
+      }
+    }
+  }
+}

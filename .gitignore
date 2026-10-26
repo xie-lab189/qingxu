@@ -1,0 +1,29 @@
+# dependencies
+node_modules
+
+# build output
+dist
+dist-ssr
+*.local
+
+# env / secrets (NEVER commit real keys)
+.env
+.env.*
+!.env.example
+server/secrets.json
+
+# vercel
+.vercel
+
+# logs
+*.log
+
+# os
+.DS_Store
+
+# workbuddy publish artifacts
+.wbapp*.genie
+
+# data backups (contain user data, never commit)
+qingxu_backup*.json
+output/_copy_pub.py
