@@ -10,7 +10,7 @@ import { getSession } from "@/lib/api";
 import { getCurrentUser } from "@/lib/profileService";
 import { onEmailPromptRequested } from "@/lib/emailGate";
 import { EmailGateModal } from "@/components/email/EmailGateModal";
-import { requestNotifyPermission } from "@/lib/notify";
+import { setupWebPush } from "@/lib/webpush";
 import { startSyncEngine } from "@/lib/sync";
 import { MoodBackdrop } from "@/components/mood/MoodBackdrop";
 import { AgentPanel } from "@/components/agent/AgentPanel";
@@ -55,8 +55,8 @@ export default function App() {
   useEffect(() => {
     if (authed) {
       startSyncEngine();
-      // 页面初始化时请求浏览器通知权限（督促官定时提醒用）
-      requestNotifyPermission();
+      // 页面初始化时注册 Service Worker 并订阅 Web Push（每晚 20:00 系统级提醒，覆盖未登录用户）
+      setupWebPush(getSession()?.phone);
     }
   }, [authed]);
 

@@ -279,6 +279,46 @@ app.all("/api/cron/reminders", async (req, res) => {
   }
 });
 
+/* ---------------- Web Push（PWA 主动提醒，覆盖未登录网站的用户） ---------------- */
+
+/** 返回 VAPID 公钥（前端订阅时用） */
+app.get("/api/push/vapid-public-key", async (_req, res) => {
+  try {
+    const { getVapidPublicKey } = await import("./push.js");
+    res.json({ publicKey: getVapidPublicKey() });
+  } catch (e) {
+    res.status(500).json({ error: String((e && e.message) || e) });
+  }
+});
+
+/** 上报订阅（前端注册 Service Worker 并授权后调用） */
+app.post("/api/push/subscribe", async (req, res) => {
+  const { subscription, phone } = req.body ?? {};
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: "缺少 subscription" });
+  }
+  try {
+    const { addSub } = await import("./push.js");
+    addSub({ ...subscription, phone: phone ? String(phone) : undefined });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: String((e && e.message) || e) });
+  }
+});
+
+/** 取消订阅（前端在权限收回 / 用户关闭时调用） */
+app.post("/api/push/unsubscribe", async (req, res) => {
+  const { endpoint } = req.body ?? {};
+  if (!endpoint) return res.status(400).json({ error: "缺少 endpoint" });
+  try {
+    const { removeSub } = await import("./push.js");
+    removeSub(endpoint);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: String((e && e.message) || e) });
+  }
+});
+
 /* ---------------- 大模型对话代理（服务端持 Key，用户零配置、绕开 CORS） ----------------
  * 前端（src/lib/llmClient.ts）只请求同源 /api/chat，不携带任何 Key / Authorization 头；
  * 真实智谱 Key 由本服务端读取并转发，浏览器不直连厂商接口、也不把 Key 暴露给第三方。
@@ -369,4 +409,9 @@ app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
   console.log(`🌱 青序服务已启动: http://localhost:${PORT}`);
   console.log(`   存储驱动: ${process.env.STORE_DRIVER || "json"}`);
   console.log(`   API 健康检查: http://localhost:${PORT}/api/health`);
+  // 启动即生成/加载 VAPID 密钥，保证 /api/push/vapid-public-key 随时可用
+  import("./push.js")
+    .then((m) => m.getVapidPublicKey())
+    .then((k) => console.log(`   Web Push VAPID 就绪（公钥 ${k.length} 字符）`))
+    .catch((e) => console.warn("[push] VAPID 初始化跳过:", e && e.message));
 });

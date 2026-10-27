@@ -16,6 +16,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { listUsers } from "./store.js";
 import { launchToday } from "./engine.js";
+import { sendPushReminders } from "./push.js";
 
 // 读取 server/secrets.json 作为 SMTP 配置兜底（无需平台环境变量入口）
 function loadSecrets() {
@@ -99,10 +100,10 @@ export async function sendNightlyReminders(hourLabel = "20:00", force = false) {
   if (!force && lastFiredDate === today) {
     return { sent: 0, skipped: "already-sent-today" };
   }
+  let emailSent = 0;
   if (!transporter) {
-    console.log(`[mailer] ${hourLabel} 未配置 SMTP，跳过邮件提醒（在 server/secrets.json 填入 SMTP_* 即可启用）`);
-    return { sent: 0, skipped: "smtp-not-configured" };
-  }
+    console.log(`[mailer] ${hourLabel} 未配置 SMTP，跳过邮件提醒（在 server/secrets.json 或环境变量填入 SMTP_* 即可启用）`);
+  } else {
   // 收件人白名单（可选）：配置 REMINDER_PHONE 时仅这些手机号收信；
   // 未配置时，默认发送给【所有登记了邮箱的用户】（email 已在注册/登录时落库）。
   const phoneFilter = (process.env.REMINDER_PHONE || secrets.REMINDER_PHONE || "")
@@ -205,9 +206,20 @@ export async function sendNightlyReminders(hourLabel = "20:00", force = false) {
       console.error(`[mailer] 发送失败(${u.phone}):`, err.message);
     }
   }
-  console.log(`[mailer] ${hourLabel} 提醒完成：发送 ${sent} 封`);
+    emailSent = sent;
+    console.log(`[mailer] ${hourLabel} 邮件提醒完成：发送 ${sent} 封`);
+  }
+
+  // Web Push（不依赖 SMTP，覆盖"当天未登录网站"的用户）
+  let pushSent = 0;
+  try {
+    pushSent = await sendPushReminders(today);
+    if (pushSent) console.log(`[mailer] ${hourLabel} Web Push 提醒发送 ${pushSent} 条`);
+  } catch (e) {
+    console.error(`[mailer] Web Push 发送失败:`, e && e.message);
+  }
   lastFiredDate = today;
-  return { sent };
+  return { emailSent, pushSent };
 }
 
 /**
