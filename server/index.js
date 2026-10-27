@@ -267,7 +267,10 @@ app.all("/api/cron/reminders", async (req, res) => {
   const token = process.env.CRON_TOKEN || secrets.CRON_TOKEN || "";
   const provided =
     (req.query && req.query.token) || (req.headers && req.headers["x-cron-token"]) || "";
-  if (token && provided !== token) {
+  // Vercel Cron 由平台以 vercel-cron/1.0 的 UA 调用，免令牌放行；其余仍受 CRON_TOKEN 保护
+  const ua = (req.headers && req.headers["user-agent"]) || "";
+  const isVercelCron = Boolean(process.env.VERCEL) && ua.includes("vercel-cron");
+  if (!isVercelCron && token && provided !== token) {
     return res.status(403).json({ error: "forbidden" });
   }
   try {
@@ -392,20 +395,22 @@ app.post("/api/chat", express.json({ limit: "2mb" }), async (req, res) => {
   }
 });
 
-/* ---------------- 前端静态托管 ---------------- */
-
-const DIST = join(__dirname, "..", "dist");
-if (existsSync(DIST)) {
-  app.use(express.static(DIST));
-  app.use((req, res, next) => {
-    if (req.method === "GET" && !req.path.startsWith("/api")) {
-      return res.sendFile(join(DIST, "index.html"));
-    }
-    next();
-  });
+/* ---------------- 前端静态托管（仅本地/自托管；Vercel 由平台托管 dist，函数不负责静态） ---------------- */
+if (!process.env.VERCEL) {
+  const DIST = join(__dirname, "..", "dist");
+  if (existsSync(DIST)) {
+    app.use(express.static(DIST));
+    app.use((req, res, next) => {
+      if (req.method === "GET" && !req.path.startsWith("/api")) {
+        return res.sendFile(join(DIST, "index.html"));
+      }
+      next();
+    });
+  }
 }
 
-app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
+if (!process.env.VERCEL) {
+  app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
   console.log(`🌱 青序服务已启动: http://localhost:${PORT}`);
   console.log(`   存储驱动: ${process.env.STORE_DRIVER || "json"}`);
   console.log(`   API 健康检查: http://localhost:${PORT}/api/health`);
@@ -414,4 +419,5 @@ app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
     .then((m) => m.getVapidPublicKey())
     .then((k) => console.log(`   Web Push VAPID 就绪（公钥 ${k.length} 字符）`))
     .catch((e) => console.warn("[push] VAPID 初始化跳过:", e && e.message));
-});
+  });
+}

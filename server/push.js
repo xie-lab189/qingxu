@@ -2,8 +2,9 @@
  * 青序 · Web Push（PWA 推送，邮件提醒的主动触达兜底）
  *
  * - VAPID 密钥：优先读环境变量 VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY；
- *   未提供则在首次启动时生成并持久化到 data/vapid.json（零配置即可跑）。
- * - 订阅列表：data/push-subscriptions.json（按 endpoint 去重）。
+ *   未提供则首次生成并持久化（Vercel 上存 Blob 的 meta/vapid.json，本地存 data/vapid.json），
+ *   保证跨函数调用密钥稳定——否则旧订阅会因密钥变化而 410 失效。
+ * - 订阅列表：Vercel 上存 Blob 的 meta/push-subscriptions.json，本地存 data/push-subscriptions.json。
  * - 每晚 20:00（北京时间）由 /api/cron/reminders 调用 sendPushReminders，
  *   向所有已订阅设备推送「督促官」提醒——即使网站当天没被打开也能触达，
  *   解决"用户好几天不登录网站"收不到提醒的缺口。
@@ -12,6 +13,7 @@ import webpush from "web-push";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { blobAvailable, readJSON, writeJSON } from "./blobStore.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "..", "data");
@@ -19,7 +21,30 @@ const VAPID_FILE = join(DATA_DIR, "vapid.json");
 const SUBS_FILE = join(DATA_DIR, "push-subscriptions.json");
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:noreply@qingxu.app";
 
+const VAPID_BLOB = "meta/vapid.json";
+const SUBS_BLOB = "meta/push-subscriptions.json";
+
 let vapidReady = false;
+
+/* ---------------- VAPID ---------------- */
+function loadVapidLocal() {
+  try {
+    if (existsSync(VAPID_FILE)) {
+      return JSON.parse(readFileSync(VAPID_FILE, "utf-8"));
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+function saveVapidLocal(v) {
+  try {
+    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+    writeFileSync(VAPID_FILE, JSON.stringify(v), "utf-8");
+  } catch {
+    /* ignore */
+  }
+}
 
 function ensureVapid() {
   if (vapidReady) return;
@@ -27,24 +52,35 @@ function ensureVapid() {
   let priv = process.env.VAPID_PRIVATE_KEY || "";
 
   if (!pub || !priv) {
-    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-    if (existsSync(VAPID_FILE)) {
+    // 先尝试已有持久化
+    let stored = null;
+    if (blobAvailable) stored = null; // 占位，下面统一读取
+    if (blobAvailable) {
       try {
-        const v = JSON.parse(readFileSync(VAPID_FILE, "utf-8"));
-        pub = v.publicKey;
-        priv = v.privateKey;
+        stored = readJSON(VAPID_BLOB);
       } catch {
-        /* 损坏则重新生成 */
+        stored = null;
       }
+    } else {
+      stored = loadVapidLocal();
+    }
+    if (stored && stored.publicKey && stored.privateKey) {
+      pub = stored.publicKey;
+      priv = stored.privateKey;
     }
     if (!pub || !priv) {
       const keys = webpush.generateVAPIDKeys();
       pub = keys.publicKey;
       priv = keys.privateKey;
-      try {
-        writeFileSync(VAPID_FILE, JSON.stringify(keys), "utf-8");
-      } catch (e) {
-        console.error("[push] 保存 VAPID 失败", e && e.message);
+      // 持久化，避免下次冷启动换密钥导致旧订阅失效
+      if (blobAvailable) {
+        try {
+          writeJSON(VAPID_BLOB, { publicKey: pub, privateKey: priv });
+        } catch (e) {
+          console.error("[push] 保存 VAPID 到 Blob 失败", e && e.message);
+        }
+      } else {
+        saveVapidLocal({ publicKey: pub, privateKey: priv });
       }
     }
   }
@@ -57,27 +93,42 @@ function ensureVapid() {
 export function getVapidPublicKey() {
   ensureVapid();
   if (process.env.VAPID_PUBLIC_KEY) return process.env.VAPID_PUBLIC_KEY;
+  if (blobAvailable) {
+    try {
+      return readJSON(VAPID_BLOB).publicKey;
+    } catch {
+      /* ignore */
+    }
+  }
   try {
-    return JSON.parse(readFileSync(VAPID_FILE, "utf-8")).publicKey;
+    return loadVapidLocal().publicKey;
   } catch {
     return "";
   }
 }
 
+/* ---------------- 订阅持久化 ---------------- */
 function loadSubs() {
   try {
-    if (!existsSync(SUBS_FILE)) return [];
-    const arr = JSON.parse(readFileSync(SUBS_FILE, "utf-8"));
+    let arr = null;
+    if (blobAvailable) {
+      arr = readJSON(SUBS_BLOB);
+    } else if (existsSync(SUBS_FILE)) {
+      arr = JSON.parse(readFileSync(SUBS_FILE, "utf-8"));
+    }
     return Array.isArray(arr) ? arr : [];
   } catch {
     return [];
   }
 }
-
 function saveSubs(subs) {
   try {
-    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-    writeFileSync(SUBS_FILE, JSON.stringify(subs, null, 2), "utf-8");
+    if (blobAvailable) {
+      writeJSON(SUBS_BLOB, subs);
+    } else {
+      if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+      writeFileSync(SUBS_FILE, JSON.stringify(subs, null, 2), "utf-8");
+    }
   } catch (e) {
     console.error("[push] 保存订阅失败", e && e.message);
   }

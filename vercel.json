@@ -1,5 +1,15 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "crons": [
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "0 12 * * *"
+    }
+  ],
+  "rewrites": [
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
 }
