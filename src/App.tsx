@@ -16,6 +16,7 @@ import { MoodBackdrop } from "@/components/mood/MoodBackdrop";
 import { AgentPanel } from "@/components/agent/AgentPanel";
 import { AgentTriggers } from "@/components/agent/AgentTriggers";
 import { AchievementChecker } from "@/components/agent/AchievementChecker";
+import { NextDayReminder } from "@/components/reminder/NextDayReminder";
 import { TimerPill } from "@/components/timer/TimerPill";
 import DashboardPage from "@/pages/DashboardPage";
 import TasksPage from "@/pages/TasksPage";
@@ -95,6 +96,8 @@ export default function App() {
             <AgentPanel />
             {/* 成就系统：监听并弹出解锁动画 */}
             <AchievementChecker />
+            {/* 站内提醒兜底：隔天打开若有未完成任务，底部温和提示（邮件提醒的兜底） */}
+            {authed && <NextDayReminder onGoTasks={() => setPage("tasks")} />}
             {/* 全局番茄钟胶囊（左下角） */}
             <TimerPill />
             {/* 首次打开：欢迎弹窗（用户名 + 手机号，手机号 = 唯一用户 ID） */}
