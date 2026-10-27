@@ -27,3 +27,6 @@ server/secrets.json
 # data backups (contain user data, never commit)
 qingxu_backup*.json
 output/_copy_pub.py
+
+# runtime data store (server writes its own db.json on Render; keep local out of repo)
+data/
