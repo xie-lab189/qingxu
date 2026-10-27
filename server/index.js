@@ -23,8 +23,23 @@ const app = express();
 // 本地开发可用 `PORT=8787 npm start` 恢复原端口。
 const PORT = Number(process.env.PORT) || 3000;
 
+// 是否以 `node server/index.js` 直接运行（本地/自托管）；被云函数 import 时为 false。
+const isMainModule =
+  Boolean(process.argv[1]) &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
+
+// 云函数环境前缀兼容：EdgeOne Pages 会把 /api 前缀剥离后再交给 Express（req.url 变为 /chat），
+// 而 Vercel 保留完整路径（/api/chat）。为同时兼容两者，给缺少 /api 前缀的请求补上前缀。
+// 本地直跑时不启用，避免把 SPA 的 / 也误改成 /api/。
+if (!isMainModule) {
+  app.use((req, _res, next) => {
+    if (!req.url.startsWith("/api")) req.url = "/api" + req.url;
+    next();
+  });
+}
 
 /** 简易请求日志 */
 app.use((req, _res, next) => {
@@ -399,9 +414,6 @@ app.post("/api/chat", express.json({ limit: "2mb" }), async (req, res) => {
  * 判定逻辑：仅当本文件被 `node server/index.js` 直接运行时（即本地/自托管），才托管静态资源并 listen；
  * 被云函数（Vercel api/[[...slug]].js 或 EdgeOne cloud-functions/api/[[default]].js）以 `import` 方式
  * 引入时，平台负责静态资源与监听，这里只导出 Express 实例，绝不自行 listen（避免 serverless 环境误启动）。 */
-const isMainModule =
-  Boolean(process.argv[1]) &&
-  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isMainModule) {
   const DIST = join(__dirname, "..", "dist");
