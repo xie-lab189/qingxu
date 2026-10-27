@@ -11,7 +11,7 @@
  * 部署：在 Vercel 的环境变量中配置 ZHIPU_API_KEY（可选 ZHIPU_BASE_URL / ZHIPU_MODEL）后重新部署。
  */
 export const config = {
-  runtime: "nodejs20.x",
+  runtime: "nodejs",
 };
 
 const ZHIPU_BASE_DEFAULT = "https://open.bigmodel.cn/api/paas/v4";
