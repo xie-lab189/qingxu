@@ -19,6 +19,7 @@ import { createMasterTask, launchToday, replanByMood, dateKey } from "./engine.j
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
+const api = express.Router();
 // 部署平台会注入 PORT；未注入时兜底 3000（与发布探针一致）。
 // 本地开发可用 `PORT=8787 npm start` 恢复原端口。
 const PORT = Number(process.env.PORT) || 3000;
@@ -31,15 +32,9 @@ const isMainModule =
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
-// 云函数环境前缀兼容：EdgeOne Pages 会把 /api 前缀剥离后再交给 Express（req.url 变为 /chat），
-// 而 Vercel 保留完整路径（/api/chat）。为同时兼容两者，给缺少 /api 前缀的请求补上前缀。
-// 本地直跑时不启用，避免把 SPA 的 / 也误改成 /api/。
-if (!isMainModule) {
-  app.use((req, _res, next) => {
-    if (!req.url.startsWith("/api")) req.url = "/api" + req.url;
-    next();
-  });
-}
+
+app.use("/api", api);
+app.use("/", api);
 
 /** 简易请求日志 */
 app.use((req, _res, next) => {
@@ -54,7 +49,7 @@ function resolvePhone(req) {
 }
 
 /** 健康检查 */
-app.get("/api/health", (_req, res) => {
+api.get("/health", (_req, res) => {
   res.json({
     ok: true,
     service: "qingxu-api",
@@ -86,12 +81,12 @@ async function handleRegister(req, res) {
   }
 }
 
-app.post("/api/register", handleRegister);
+api.post("/register", handleRegister);
 /** 兼容旧路径 */
-app.post("/api/auth/register", handleRegister);
+api.post("/auth/register", handleRegister);
 
 /** 查询用户（Session 恢复校验） */
-app.get("/api/auth/:phone", async (req, res) => {
+api.get("/auth/:phone", async (req, res) => {
   const record = await findUser(req.params.phone);
   if (!record) return res.status(404).json({ error: "用户不存在" });
   res.json({ user: { name: record.name, phone: record.phone } });
@@ -100,7 +95,7 @@ app.get("/api/auth/:phone", async (req, res) => {
 /* ---------------- 语义接口（核心业务） ---------------- */
 
 /** 今日任务清单（CheckTodayPlan）：服务端每日自动发布 + 返回今日任务 */
-app.get("/api/tasks", async (req, res) => {
+api.get("/tasks", async (req, res) => {
   const phone = resolvePhone(req);
   if (!phone) return res.status(401).json({ error: "缺少有效用户标识（X-User-Id / phone）" });
   const record = await readState(phone);
@@ -128,7 +123,7 @@ app.get("/api/tasks", async (req, res) => {
 });
 
 /** 录入任务并生成计划：按用户选择的四象限 + 天数自动拆解、发布今日卡片 */
-app.post("/api/task/plan", async (req, res) => {
+api.post("/task/plan", async (req, res) => {
   const phone = resolvePhone(req);
   if (!phone) return res.status(401).json({ error: "缺少有效用户标识" });
   const { name, days, quadrant } = req.body ?? {};
@@ -154,7 +149,7 @@ app.post("/api/task/plan", async (req, res) => {
 });
 
 /** 情绪驱动重规划：写入心情 + 实时重写今日任务列表（服务端口径） */
-app.post("/api/mood/replan", async (req, res) => {
+api.post("/mood/replan", async (req, res) => {
   const phone = resolvePhone(req);
   if (!phone) return res.status(401).json({ error: "缺少有效用户标识" });
   const { mood } = req.body ?? {};
@@ -218,7 +213,7 @@ app.post("/api/mood/replan", async (req, res) => {
 
 /* ---------------- 全量状态同步（前端本地优先，云端权威） ---------------- */
 
-app.get("/api/state/:phone", async (req, res) => {
+api.get("/state/:phone", async (req, res) => {
   const record = await readState(req.params.phone);
   if (!record) return res.status(404).json({ error: "用户不存在" });
   res.json({
@@ -227,7 +222,7 @@ app.get("/api/state/:phone", async (req, res) => {
   });
 });
 
-app.put("/api/state/:phone", async (req, res) => {
+api.put("/state/:phone", async (req, res) => {
   const { state } = req.body ?? {};
   if (!state || typeof state !== "object") {
     return res.status(400).json({ error: "state 必须为对象" });
@@ -241,14 +236,14 @@ app.put("/api/state/:phone", async (req, res) => {
 });
 
 /** 手动触发邮件提醒（测试用；生产由定时任务每天 20:00 北京时间自动执行） */
-app.post("/api/admin/send-reminders", async (_req, res) => {
+api.post("/admin/send-reminders", async (_req, res) => {
   const { sendNightlyReminders } = await import("./mailer.js");
   res.json(await sendNightlyReminders("manual", true));
 });
 
 /** 全量数据导出（备份用）：带令牌保护，返回所有用户的完整云端状态 JSON。
  *  用途：平台变动前把云端数据落地留存；与 /api/cron/reminders 共用 CRON_TOKEN 鉴权。 */
-app.get("/api/admin/export", async (req, res) => {
+api.get("/admin/export", async (req, res) => {
   const secrets = readSecrets();
   const token = process.env.CRON_TOKEN || secrets.CRON_TOKEN || "";
   const provided =
@@ -300,7 +295,7 @@ app.all("/api/cron/reminders", async (req, res) => {
 /* ---------------- Web Push（PWA 主动提醒，覆盖未登录网站的用户） ---------------- */
 
 /** 返回 VAPID 公钥（前端订阅时用） */
-app.get("/api/push/vapid-public-key", async (_req, res) => {
+api.get("/push/vapid-public-key", async (_req, res) => {
   try {
     const { getVapidPublicKey } = await import("./push.js");
     res.json({ publicKey: getVapidPublicKey() });
@@ -310,7 +305,7 @@ app.get("/api/push/vapid-public-key", async (_req, res) => {
 });
 
 /** 上报订阅（前端注册 Service Worker 并授权后调用） */
-app.post("/api/push/subscribe", async (req, res) => {
+api.post("/push/subscribe", async (req, res) => {
   const { subscription, phone } = req.body ?? {};
   if (!subscription || !subscription.endpoint) {
     return res.status(400).json({ error: "缺少 subscription" });
@@ -325,7 +320,7 @@ app.post("/api/push/subscribe", async (req, res) => {
 });
 
 /** 取消订阅（前端在权限收回 / 用户关闭时调用） */
-app.post("/api/push/unsubscribe", async (req, res) => {
+api.post("/push/unsubscribe", async (req, res) => {
   const { endpoint } = req.body ?? {};
   if (!endpoint) return res.status(400).json({ error: "缺少 endpoint" });
   try {
@@ -359,7 +354,7 @@ function readSecrets() {
   return cachedSecrets;
 }
 
-app.post("/api/chat", express.json({ limit: "2mb" }), async (req, res) => {
+api.post("/chat", express.json({ limit: "2mb" }), async (req, res) => {
   const body = req.body ?? {};
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return res.status(400).json({ error: { message: "缺少 messages 字段" } });
