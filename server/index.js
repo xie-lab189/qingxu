@@ -12,7 +12,7 @@
 import express from "express";
 import cors from "cors";
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findUser, readState, upsertUser, writeState, listUsers } from "./store.js";
 import { createMasterTask, launchToday, replanByMood, dateKey } from "./engine.js";
@@ -395,8 +395,15 @@ app.post("/api/chat", express.json({ limit: "2mb" }), async (req, res) => {
   }
 });
 
-/* ---------------- 前端静态托管（仅本地/自托管；Vercel 由平台托管 dist，函数不负责静态） ---------------- */
-if (!process.env.VERCEL) {
+/* ---------------- 前端静态托管（仅本地/自托管；云端由平台托管 dist，函数不负责静态） ----------------
+ * 判定逻辑：仅当本文件被 `node server/index.js` 直接运行时（即本地/自托管），才托管静态资源并 listen；
+ * 被云函数（Vercel api/[[...slug]].js 或 EdgeOne cloud-functions/api/[[default]].js）以 `import` 方式
+ * 引入时，平台负责静态资源与监听，这里只导出 Express 实例，绝不自行 listen（避免 serverless 环境误启动）。 */
+const isMainModule =
+  Boolean(process.argv[1]) &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (isMainModule) {
   const DIST = join(__dirname, "..", "dist");
   if (existsSync(DIST)) {
     app.use(express.static(DIST));
@@ -409,7 +416,7 @@ if (!process.env.VERCEL) {
   }
 }
 
-if (!process.env.VERCEL) {
+if (isMainModule) {
   app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
   console.log(`🌱 青序服务已启动: http://localhost:${PORT}`);
   console.log(`   存储驱动: ${process.env.STORE_DRIVER || "json"}`);
@@ -421,3 +428,9 @@ if (!process.env.VERCEL) {
     .catch((e) => console.warn("[push] VAPID 初始化跳过:", e && e.message));
   });
 }
+
+/* ---------------- 云函数导出 ----------------
+ * Vercel（api/[[...slug]].js）与 EdgeOne Pages（cloud-functions/api/[[default]].js）
+ * 均以「框架模式」引入本文件并 export default 该 Express 实例；
+ * 本地 `node server/index.js` 直跑时本文件不是入口，导出无副作用。 */
+export default app;
