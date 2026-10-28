@@ -11,12 +11,11 @@
  */
 import webpush from "web-push";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { blobAvailable, readJSON, writeJSON } from "./blobStore.js";
+import { resolveDataDir } from "./dataDir.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, "..", "data");
+const DATA_DIR = resolveDataDir();
 const VAPID_FILE = join(DATA_DIR, "vapid.json");
 const SUBS_FILE = join(DATA_DIR, "push-subscriptions.json");
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:noreply@qingxu.app";
